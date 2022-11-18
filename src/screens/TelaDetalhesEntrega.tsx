@@ -27,6 +27,8 @@ export default function TelaDetalhesEntrega() {
     const [localUsuario, setLocalUsuario] = useState<any>({})
     const [destino, setDestino] = useState<any>()
 
+    console.log(destino)
+
     useEffect(() => {
         didMount()
     }, [])
@@ -45,13 +47,9 @@ export default function TelaDetalhesEntrega() {
         setLocalUsuario({
             latitude: route.params.dadosEntrega.lat,
             longitude: route.params.dadosEntrega.lon,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421
+            latitudeDelta,
+            longitudeDelta
         })
-    }
-
-    const confirmarEntrega = () => {
-        navigation.navigate('confirmarEntrega')
     }
 
     // COMPONENTES
@@ -72,7 +70,7 @@ export default function TelaDetalhesEntrega() {
             </View>
             <Text style={styles.txtPadrao} numberOfLines={1}>{infoEntrega.logradouro}, {infoEntrega.numero}, {infoEntrega.bairro}</Text>
             <Text style={styles.txtPadrao} numberOfLines={1}>{infoEntrega.cidade} / {infoEntrega.uf}</Text>
-            <TouchableOpacity style={styles.btnConfirmar} activeOpacity={0.9} onPress={() => confirmarEntrega()}>
+            <TouchableOpacity style={styles.btnConfirmar} activeOpacity={0.9} onPress={() => navigation.navigate('confirmarEntrega')}>
                 <Text style={styles.txtBtn}>Confirmar Entrega</Text>
             </TouchableOpacity>
         </View>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { LogBox } from 'react-native'
 import { useSelector } from 'react-redux'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -8,7 +9,8 @@ import ConfirmarEntrega from './screens/ConfirmarEntrega'
 import TelaDetalhesEntrega from './screens/TelaDetalhesEntrega'
 import TelaEntregasDisponiveis from './screens/TelaEntregasDisponiveis'
 import ModalErro from './screens/ModalErro'
-import { cores } from './styles/Estilos'
+
+LogBox.ignoreLogs(['Failed prop type: Invalid prop `origin` supplied to `MapViewDirections`, expected one of type [string]'])
 
 const Stack = createNativeStackNavigator()
 
@@ -18,6 +20,12 @@ export default function App() {
             user: user
         }
     })
+
+    const forFade = ({ current }: any) => ({
+        cardStyle: {
+            opacity: current.progress,
+        },
+    });
 
     return (
         <NavigationContainer>

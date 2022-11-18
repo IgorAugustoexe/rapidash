@@ -1,13 +1,14 @@
-import React, { useEffect, useState, useContext, Fragment } from 'react'
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native'
+import React, { useEffect, useState, useContext, Fragment, useCallback } from 'react'
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, ActivityIndicator, Alert, PermissionsAndroid, Linking } from 'react-native'
 import { config, cores, estilosGlobais } from '../styles/Estilos'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faArrowRightFromBracket, faAngleRight, faFileCirclePlus, faUser, faLocationDot, faTreeCity } from '@fortawesome/free-solid-svg-icons'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import NavBar from '../components/NavBar'
 import { AuthContext } from '../apis/AuthContext'
 import Geolocation from '@react-native-community/geolocation'
 import ErroReq from '../components/ErroReq'
+import { requisitarPermissaoArmazenamento, requisitarPermissaoCamera, requisitarPermissaoLocalizacao } from '../controllers/PermissoesController'
 
 const PEDIDOS_ENTREGAR = [
     {
@@ -151,7 +152,6 @@ const PEDIDOS_ENTREGUES = [
     }
 ]
 
-
 export default function TelaEntregas() {
     const navigation = useNavigation<any>()
 
@@ -167,9 +167,16 @@ export default function TelaEntregas() {
         didMount()
     }, [])
 
+    useFocusEffect(
+        useCallback(() => {
+            pegarPedidos()
+        }, [])
+    )
+
     const didMount = () => {
-        pegarPedidos()
-        pegarLocalizacaoUser()
+        solicitarLocalizacao()
+        solicitarArmazenamento()
+        solicitarCamera()
     }
 
     const pegarPedidos = () => {
@@ -177,6 +184,56 @@ export default function TelaEntregas() {
         setLoaderReq(true)
         console.log('lista de pedidos')
         setLoaderReq(false)
+    }
+
+    const solicitarLocalizacao = async () => {
+        const permissaoLocalizacao = await requisitarPermissaoLocalizacao()
+        if (permissaoLocalizacao == PermissionsAndroid.RESULTS.GRANTED) {
+            pegarLocalizacaoUser()
+            return
+        }
+        Alert.alert(
+            "Permissão da Localização",
+            "Libere o acesso ao Urbniversity para acessar sua localização.",
+            [
+                {
+                    text: "Cancelar"
+                },
+                { text: "Liberar Acesso", onPress: () => Linking.openSettings() }
+            ]
+        )
+    }
+
+    const solicitarArmazenamento = async () => {
+        const permissaoArmazenamento = await requisitarPermissaoArmazenamento()
+        if (permissaoArmazenamento != PermissionsAndroid.RESULTS.GRANTED) {
+            Alert.alert(
+                "Permissão de armazenamento",
+                "Libere o acesso ao Urbniversity para acessar seu armazenamento.",
+                [
+                    {
+                        text: "Cancelar"
+                    },
+                    { text: "Liberar Acesso", onPress: () => Linking.openSettings() }
+                ]
+            )
+        }
+    }
+
+    const solicitarCamera = async () => {
+        const permissaoArmazenamento = await requisitarPermissaoCamera()
+        if (permissaoArmazenamento != PermissionsAndroid.RESULTS.GRANTED) {
+            Alert.alert(
+                "Permissão de armazenamento",
+                "Libere o acesso ao Urbniversity para acessar sua camera.",
+                [
+                    {
+                        text: "Cancelar"
+                    },
+                    { text: "Liberar Acesso", onPress: () => Linking.openSettings() }
+                ]
+            )
+        }
     }
 
     const pegarLocalizacaoUser = () => {
@@ -193,7 +250,6 @@ export default function TelaEntregas() {
             timeout: 2000
         })
     }
-
     const abrirDetalhesPedido = (dadosEntrega: object, local: object) => {
         navigation.navigate('detalhesEntrega', { dadosEntrega, local })
     }

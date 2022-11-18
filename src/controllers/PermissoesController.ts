@@ -32,3 +32,14 @@ export const requisitarPermissaoArmazenamento = async () => {
         throw new Error(`erro ao requisitar o armazenamento : ${err}`)
     }
 }
+
+export const requisitarPermissaoCamera = async () => {
+    try {
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+        )
+        return granted
+    } catch (err) {
+        throw new Error(`erro ao requitar a camera ${err}`)
+    }
+}
