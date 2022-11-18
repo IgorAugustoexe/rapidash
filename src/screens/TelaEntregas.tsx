@@ -8,7 +8,7 @@ import NavBar from '../components/NavBar'
 import { AuthContext } from '../apis/AuthContext'
 import Geolocation from '@react-native-community/geolocation'
 import ErroReq from '../components/ErroReq'
-import { requisitarPermissaoArmazenamento, requisitarPermissaoCamera, requisitarPermissaoLocalizacao } from '../controllers/PermissoesController'
+import { requisitarPermissaoArmazenamento, requisitarPermissaoLocalizacao } from '../controllers/PermissoesController'
 
 const PEDIDOS_ENTREGAR = [
     {
@@ -176,7 +176,6 @@ export default function TelaEntregas() {
     const didMount = () => {
         solicitarLocalizacao()
         solicitarArmazenamento()
-        solicitarCamera()
     }
 
     const pegarPedidos = () => {
@@ -210,22 +209,6 @@ export default function TelaEntregas() {
             Alert.alert(
                 "Permissão de armazenamento",
                 "Libere o acesso ao Urbniversity para acessar seu armazenamento.",
-                [
-                    {
-                        text: "Cancelar"
-                    },
-                    { text: "Liberar Acesso", onPress: () => Linking.openSettings() }
-                ]
-            )
-        }
-    }
-
-    const solicitarCamera = async () => {
-        const permissaoArmazenamento = await requisitarPermissaoCamera()
-        if (permissaoArmazenamento != PermissionsAndroid.RESULTS.GRANTED) {
-            Alert.alert(
-                "Permissão de armazenamento",
-                "Libere o acesso ao Urbniversity para acessar sua camera.",
                 [
                     {
                         text: "Cancelar"

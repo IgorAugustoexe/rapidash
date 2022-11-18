@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, TouchableOpacity, PermissionsAndroid, Alert, Linking } from 'react-native'
 import { config, cores, estilosGlobais } from '../styles/Estilos'
 import { faArrowLeft, faLocationDot, faUser } from '@fortawesome/free-solid-svg-icons'
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native'
@@ -7,6 +7,7 @@ import NavBar from '../components/NavBar'
 import MapView, { Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { requisitarPermissaoCamera } from '../controllers/PermissoesController'
 
 type navigation = {
     props: {
@@ -26,8 +27,6 @@ export default function TelaDetalhesEntrega() {
 
     const [localUsuario, setLocalUsuario] = useState<any>({})
     const [destino, setDestino] = useState<any>()
-
-    console.log(destino)
 
     useEffect(() => {
         didMount()
@@ -51,6 +50,23 @@ export default function TelaDetalhesEntrega() {
             longitudeDelta
         })
     }
+
+    const solicitarCamera = async () => {
+        const permissaoArmazenamento = await requisitarPermissaoCamera()
+        if (permissaoArmazenamento != PermissionsAndroid.RESULTS.GRANTED) {
+            Alert.alert(
+                "Permissão de armazenamento",
+                "Libere o acesso ao Urbniversity para acessar sua camera.",
+                [
+                    {
+                        text: "Cancelar"
+                    },
+                    { text: "Liberar Acesso", onPress: () => Linking.openSettings() }
+                ]
+            )
+        }
+    }
+
 
     // COMPONENTES
 
